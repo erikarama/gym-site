@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Palestra - Prenotazioni</title>
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- Includi FullCalendar CSS dal CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
+    
+    <!-- Includi jQuery dal CDN (necessario per FullCalendar) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Includi FullCalendar JS dal CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
 </head>
 <body>
     <header>
@@ -19,29 +28,36 @@
     </header>
     
     <section id="home">
-        <h2>Benvenuti in FitZone</h2>
-        <p>Prenota la palestra per il giorno e l'ora che preferisci!</p>
+        <h2 class="centrato">Benvenuti in FitZone</h2>
+        <p class="centrato">Prenota la palestra per il giorno e l'ora che preferisci!</p>
     </section>
     
     <section id="prenotazioni">
-        <h2>Prenota la tua sessione</h2>
-        <form>
+        <h2 class="centrato">Prenota la tua sessione</h2>
+        
+        <form class="centrato" id="prenotazione-form">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome" required placeholder="Inserisci il tuo nome">
+
             <label for="data">Seleziona la data:</label>
             <input type="date" id="data" name="data" required>
             
             <label for="orario">Seleziona l'orario:</label>
             <input type="time" id="orario" name="orario" required>
+
+            <label for="durata">Seleziona la durata:</label>
+            <select id="durata" name="durata">
+                <option value="0.5">30 minuti</option>
+                <option value="1">1 ora</option>
+                <option value="1.5">1 ora e 30</option>
+                <option value="2">2 ore</option>
+            </select>
             
             <button type="submit">Prenota</button>
         </form>
 
-        <h3>Calendario Prenotazioni</h3>
-        <!-- Calendario semplice statico, puoi sostituirlo con un calendario dinamico -->
-        <div id="calendar">
-            <p><strong>21 Marzo 2025:</strong> Prenotato dalle 10:00 alle 12:00</p>
-            <p><strong>22 Marzo 2025:</strong> Prenotato dalle 14:00 alle 16:00</p>
-            <p><strong>23 Marzo 2025:</strong> Prenotato dalle 9:00 alle 11:00</p>
-        </div>
+        <h3 class="centrato">Calendario Prenotazioni</h3>
+        <div id="calendar"></div>
     </section>
     
     <section id="chi-siamo">
@@ -52,5 +68,63 @@
     <footer>
         <p>&copy; 2025 FitZone - Tutti i diritti riservati.</p>
     </footer>
+
+    <script>
+        $(document).ready(function() {
+            // Inizializzazione del calendario
+            $('#calendar').fullCalendar({
+                events: [
+                    // Eventi iniziali (puoi modificarli o aggiungerli tramite il modulo)
+                    {
+                        title: 'Mario ha prenotato dalle 10:00 alle 12:00',
+                        start: '2025-03-21T10:00:00',
+                        end: '2025-03-21T12:00:00',
+                    },
+                    {
+                        title: 'Giulia ha prenotato dalle 14:00 alle 16:00',
+                        start: '2025-03-22T14:00:00',
+                        end: '2025-03-22T16:00:00',
+                    },
+                    {
+                        title: 'Luca ha prenotato dalle 9:00 alle 11:00',
+                        start: '2025-03-23T09:00:00',
+                        end: '2025-03-23T11:00:00',
+                    }
+                ],
+                eventRender: function(event, element) {
+                    // Personalizza la visualizzazione dell'evento nel calendario
+                    var startTime = moment(event.start).format('HH:mm');
+                    var endTime = moment(event.end).format('HH:mm');
+                    element.html(event.title + ' dalle ' + startTime + ' a ' + endTime);
+                }
+            });
+
+            // Gestione del modulo di prenotazione
+            $('#prenotazione-form').on('submit', function(e) {
+                e.preventDefault();
+
+                // Ottieni i valori dal modulo
+                var nome = $('#nome').val();
+                var data = $('#data').val();
+                var orario = $('#orario').val();
+                var durata = $('#durata').val();
+
+                // Calcola l'orario di fine
+                var start = moment(data + 'T' + orario);
+                var end = moment(start).add(durata, 'hours');
+                var title = nome + ' ha prenotato dalle ' + start.format('HH:mm') + ' a ' + end.format('HH:mm');
+
+                // Aggiungi l'evento al calendario
+                $('#calendar').fullCalendar('renderEvent', {
+                    title: title,
+                    start: start,
+                    end: end
+                });
+
+                // Pulisci il modulo
+                $('#prenotazione-form')[0].reset();
+            });
+        });
+    </script>
 </body>
 </html>
