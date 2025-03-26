@@ -35,7 +35,11 @@
     <section id="prenotazioni">
         <h2 class="centrato">Prenota la tua sessione</h2>
         
-        <form class="centrato" id="prenotazione-form">
+        <!-- Pulsante di toggle per il modulo di prenotazione -->
+        <button id="toggle-prenotazione" class="centrato">Prenota ora</button>
+        
+        <!-- Modulo di prenotazione che sarà nascosto inizialmente -->
+        <form class="centrato" id="prenotazione-form" style="display:none;">
             <label for="nome">Nome:</label>
             <input type="text" id="nome" name="nome" required placeholder="Inserisci il tuo nome">
 
@@ -71,26 +75,12 @@
 
     <script>
         $(document).ready(function() {
+            // Array per memorizzare gli eventi prenotati
+            var eventsArray = [];
+
             // Inizializzazione del calendario
             $('#calendar').fullCalendar({
-                events: [
-                    // Eventi iniziali (puoi modificarli o aggiungerli tramite il modulo)
-                    {
-                        title: 'Mario ha prenotato dalle 10:00 alle 12:00',
-                        start: '2025-03-21T10:00:00',
-                        end: '2025-03-21T12:00:00',
-                    },
-                    {
-                        title: 'Giulia ha prenotato dalle 14:00 alle 16:00',
-                        start: '2025-03-22T14:00:00',
-                        end: '2025-03-22T16:00:00',
-                    },
-                    {
-                        title: 'Luca ha prenotato dalle 9:00 alle 11:00',
-                        start: '2025-03-23T09:00:00',
-                        end: '2025-03-23T11:00:00',
-                    }
-                ],
+                events: eventsArray,
                 eventRender: function(event, element) {
                     // Personalizza la visualizzazione dell'evento nel calendario
                     var startTime = moment(event.start).format('HH:mm');
@@ -109,20 +99,29 @@
                 var orario = $('#orario').val();
                 var durata = $('#durata').val();
 
-                // Calcola l'orario di fine
+                // Calcola l'orario di inizio e fine
                 var start = moment(data + 'T' + orario);
                 var end = moment(start).add(durata, 'hours');
                 var title = nome + ' ha prenotato dalle ' + start.format('HH:mm') + ' a ' + end.format('HH:mm');
 
-                // Aggiungi l'evento al calendario
-                $('#calendar').fullCalendar('renderEvent', {
+                // Aggiungi l'evento all'array degli eventi
+                eventsArray.push({
                     title: title,
                     start: start,
                     end: end
                 });
 
+                // Ricarica il calendario per mostrare gli eventi aggiornati
+                $('#calendar').fullCalendar('removeEvents');
+                $('#calendar').fullCalendar('addEventSource', eventsArray);
+
                 // Pulisci il modulo
                 $('#prenotazione-form')[0].reset();
+            });
+
+            // Toggle per mostrare/nascondere il modulo di prenotazione
+            $('#toggle-prenotazione').on('click', function() {
+                $('#prenotazione-form').toggle();
             });
         });
     </script>
