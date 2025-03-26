@@ -46,16 +46,11 @@
             <label for="data">Seleziona la data:</label>
             <input type="date" id="data" name="data" required>
             
-            <label for="orario">Seleziona l'orario:</label>
-            <input type="time" id="orario" name="orario" required>
+            <label for="entrata">Orario di entrata:</label>
+            <input type="time" id="entrata" name="entrata" required>
 
-            <label for="durata">Seleziona la durata:</label>
-            <select id="durata" name="durata">
-                <option value="0.5">30 minuti</option>
-                <option value="1">1 ora</option>
-                <option value="1.5">1 ora e 30</option>
-                <option value="2">2 ore</option>
-            </select>
+            <label for="uscita">Orario di uscita:</label>
+            <input type="time" id="uscita" name="uscita" required>
             
             <button type="submit">Prenota</button>
         </form>
@@ -79,15 +74,16 @@
             var eventsArray = [];
 
             // Inizializzazione del calendario
-            $('#calendar').fullCalendar({
+            var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
                 events: eventsArray,
-                eventRender: function(event, element) {
+                eventRender: function(info) {
                     // Personalizza la visualizzazione dell'evento nel calendario
-                    var startTime = moment(event.start).format('HH:mm');
-                    var endTime = moment(event.end).format('HH:mm');
-                    element.html(event.title + ' dalle ' + startTime + ' a ' + endTime);
+                    var startTime = info.event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    var endTime = info.event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    info.el.innerHTML = `${info.event.title} dalle ${startTime} a ${endTime}`;
                 }
             });
+            calendar.render();
 
             // Gestione del modulo di prenotazione
             $('#prenotazione-form').on('submit', function(e) {
@@ -96,24 +92,23 @@
                 // Ottieni i valori dal modulo
                 var nome = $('#nome').val();
                 var data = $('#data').val();
-                var orario = $('#orario').val();
-                var durata = $('#durata').val();
+                var entrata = $('#entrata').val();
+                var uscita = $('#uscita').val();
 
                 // Calcola l'orario di inizio e fine
-                var start = moment(data + 'T' + orario);
-                var end = moment(start).add(durata, 'hours');
+                var start = moment(data + 'T' + entrata);
+                var end = moment(data + 'T' + uscita);
                 var title = nome + ' ha prenotato dalle ' + start.format('HH:mm') + ' a ' + end.format('HH:mm');
 
                 // Aggiungi l'evento all'array degli eventi
                 eventsArray.push({
                     title: title,
-                    start: start,
-                    end: end
+                    start: start.toDate(),
+                    end: end.toDate()
                 });
 
                 // Ricarica il calendario per mostrare gli eventi aggiornati
-                $('#calendar').fullCalendar('removeEvents');
-                $('#calendar').fullCalendar('addEventSource', eventsArray);
+                calendar.refetchEvents();
 
                 // Pulisci il modulo
                 $('#prenotazione-form')[0].reset();
