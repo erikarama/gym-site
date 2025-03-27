@@ -3,122 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Palestra - Prenotazioni</title>
+    <title>Palestra FitZone - Prenotazioni</title>
     <link rel="stylesheet" href="styles.css">
-    
-    <!-- Includi FullCalendar CSS dal CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
-    
-    <!-- Includi jQuery dal CDN (necessario per FullCalendar) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
-    <!-- Includi FullCalendar JS dal CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
 </head>
 <body>
     <header>
-        <h1>Palestra FitZone</h1>
-        <nav>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#prenotazioni">Prenotazioni</a></li>
-                <li><a href="#chi-siamo">Chi Siamo</a></li>
-            </ul>
-        </nav>
+        <div class="container">
+            <h1>Palestra FitZone</h1>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#prenotazioni">Prenotazioni</a></li>
+                    <li><a href="#informazioni">Informazioni</a></li>
+                    <li><a href="#prenotazioni-link">Vedi Prenotazioni</a></li>
+                </ul>
+            </nav>
+        </div>
     </header>
-    
-    <section id="home">
-        <h2 class="centrato">Benvenuti in FitZone</h2>
-        <p class="centrato">Prenota la palestra per il giorno e l'ora che preferisci!</p>
+
+    <section id="home" class="center">
+        <h2>Benvenuti in FitZone</h2>
+        <p>Prenota la palestra per il giorno e l'ora che preferisci!</p>
     </section>
-    
-    <section id="prenotazioni">
-        <h2 class="centrato">Prenota la tua sessione</h2>
-        
-        <!-- Pulsante di toggle per il modulo di prenotazione -->
-        <button id="toggle-prenotazione" class="centrato">Prenota ora</button>
-        
-        <!-- Modulo di prenotazione che sarà nascosto inizialmente -->
-        <form class="centrato" id="prenotazione-form" style="display:none;">
-            <label for="nome">Nome:</label>
-            <input type="text" id="nome" name="nome" required placeholder="Inserisci il tuo nome">
 
-            <label for="data">Seleziona la data:</label>
-            <input type="date" id="data" name="data" required>
-            
-            <label for="entrata">Orario di entrata:</label>
-            <input type="time" id="entrata" name="entrata" required>
-
-            <label for="uscita">Orario di uscita:</label>
-            <input type="time" id="uscita" name="uscita" required>
-            
-            <button type="submit">Prenota</button>
-        </form>
-
-        <h3 class="centrato">Calendario Prenotazioni</h3>
-        <div id="calendar"></div>
+    <section id="prenotazioni" class="center">
+        <h2>Prenota la tua sessione</h2>
+        <p>Compila il modulo per prenotare il tuo posto!</p>
+        <!-- Link al Google Form per le prenotazioni -->
+        <iframe src="https://forms.gle/EibWTdY5Urxfuzo89" width="640" height="480" frameborder="0" marginheight="0" marginwidth="0">Caricamento…</iframe>
     </section>
-    
-    <section id="chi-siamo">
+
+    <section id="informazioni" class="center">
         <h2>Chi Siamo</h2>
-        <p>Una palestra moderna con attrezzature all'avanguardia.</p>
+        <p>FitZone è una palestra moderna con attrezzature all'avanguardia. Offriamo un ambiente accogliente e professionale per tutti i nostri membri, con spazi dedicati per allenamenti individuali e di gruppo.</p>
     </section>
-    
+
+    <section id="prenotazioni-link" class="center">
+        <h2>Visualizza le prenotazioni</h2>
+        <p>Puoi visualizzare tutte le prenotazioni effettuate cliccando sul link qui sotto.</p>
+        <!-- Link per visualizzare le prenotazioni -->
+        <a href="https://docs.google.com/spreadsheets/d/1MAm924HXi4ah16H4muni14-DLA_eTT4guHAuGzeI2dM/edit?usp=sharing" target="_blank" class="btn">Vedi le prenotazioni</a>
+    </section>
+
     <footer>
-        <p>&copy; 2025 FitZone - Tutti i diritti riservati.</p>
+        <div class="container">
+            <p>&copy; 2025 FitZone - Tutti i diritti riservati.</p>
+        </div>
     </footer>
-
-    <script>
-        $(document).ready(function() {
-            // Array per memorizzare gli eventi prenotati
-            var eventsArray = [];
-
-            // Inizializzazione del calendario
-            var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
-                events: eventsArray,
-                eventRender: function(info) {
-                    // Personalizza la visualizzazione dell'evento nel calendario
-                    var startTime = info.event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    var endTime = info.event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    info.el.innerHTML = `${info.event.title} dalle ${startTime} a ${endTime}`;
-                }
-            });
-            calendar.render();
-
-            // Gestione del modulo di prenotazione
-            $('#prenotazione-form').on('submit', function(e) {
-                e.preventDefault();
-
-                // Ottieni i valori dal modulo
-                var nome = $('#nome').val();
-                var data = $('#data').val();
-                var entrata = $('#entrata').val();
-                var uscita = $('#uscita').val();
-
-                // Calcola l'orario di inizio e fine
-                var start = moment(data + 'T' + entrata);
-                var end = moment(data + 'T' + uscita);
-                var title = nome + ' ha prenotato dalle ' + start.format('HH:mm') + ' a ' + end.format('HH:mm');
-
-                // Aggiungi l'evento all'array degli eventi
-                eventsArray.push({
-                    title: title,
-                    start: start.toDate(),
-                    end: end.toDate()
-                });
-
-                // Ricarica il calendario per mostrare gli eventi aggiornati
-                calendar.refetchEvents();
-
-                // Pulisci il modulo
-                $('#prenotazione-form')[0].reset();
-            });
-
-            // Toggle per mostrare/nascondere il modulo di prenotazione
-            $('#toggle-prenotazione').on('click', function() {
-                $('#prenotazione-form').toggle();
-            });
-        });
-    </script>
 </body>
 </html>
